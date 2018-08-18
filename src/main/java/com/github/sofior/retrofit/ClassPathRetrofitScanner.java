@@ -30,6 +30,9 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Set;
 
+/**
+ * @author Comup
+ */
 @Slf4j
 public class ClassPathRetrofitScanner extends ClassPathBeanDefinitionScanner {
 
@@ -93,7 +96,7 @@ public class ClassPathRetrofitScanner extends ClassPathBeanDefinitionScanner {
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
 
         if (beanDefinitions.isEmpty()) {
-            log.warn( "No MyBatis mapper was found in '" + Arrays.toString(basePackages) + "' package. Please check your configuration.");
+            log.warn("No MyBatis mapper was found in '" + Arrays.toString(basePackages) + "' package. Please check your configuration.");
         } else {
             processBeanDefinitions(beanDefinitions);
         }
@@ -106,13 +109,14 @@ public class ClassPathRetrofitScanner extends ClassPathBeanDefinitionScanner {
         for (BeanDefinitionHolder holder : beanDefinitions) {
             definition = (GenericBeanDefinition) holder.getBeanDefinition();
             String beanClassName = definition.getBeanClassName();
-            log.debug( "Creating RetrofitFactoryBean with name '" + holder.getBeanName()
+            log.debug("Creating RetrofitFactoryBean with name '" + holder.getBeanName()
                     + "' and '" + beanClassName + "' retrofitInterface");
 
             // the mapper interface is the original class of the bean
             // but, the actual class of the bean is MapperFactoryBean
             definition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             definition.setBeanClass(this.retrofitFactoryBean.getClass());
+            definition.getPropertyValues().add("environment", this.getEnvironment());
 
             log.debug("Enabling autowire by type for RetrofitFactoryBean with name '" + holder.getBeanName() + "'.");
             definition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
@@ -135,8 +139,8 @@ public class ClassPathRetrofitScanner extends ClassPathBeanDefinitionScanner {
         if (super.checkCandidate(beanName, beanDefinition)) {
             return true;
         } else {
-            log.warn( "Skipping MapperFactoryBean with name '" + beanName
-                    + "' and '" + beanDefinition.getBeanClassName() + "' mapperInterface"
+            log.warn("Skipping RetrofitFactoryBean with name '" + beanName
+                    + "' and '" + beanDefinition.getBeanClassName() + "' retrofitInterface"
                     + ". Bean already defined with the same name!");
             return false;
         }

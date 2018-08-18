@@ -15,15 +15,20 @@
  */
 package com.github.sofior.retrofit;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.core.env.Environment;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
+@Slf4j
 public class RetrofitFactoryBean<T> implements FactoryBean<T> {
 
     private Class<T> retrofitInterface;
 
+    private Environment environment;
+
     public RetrofitFactoryBean() {
-        //intentionally empty
     }
 
     public RetrofitFactoryBean(Class<T> retrofitInterface) {
@@ -33,13 +38,12 @@ public class RetrofitFactoryBean<T> implements FactoryBean<T> {
     @Override
     public T getObject() throws Exception {
         RetrofitService annotation = this.getRetrofitInterface().getAnnotation(RetrofitService.class);
+        String url = environment.resolvePlaceholders(annotation.url());
+        log.debug("{} base url is {}", retrofitInterface.getName(), url);
         Retrofit retrofit = new Retrofit.Builder()
-                //设置数据解析器
-//            .addConverterFactory(GsonConverterFactory.create())
-                //设置网络请求的Url地址
-                .baseUrl(annotation.baseUrl())
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(url)
                 .build();
-// 创建网络请求接口的实例
         return retrofit.create(retrofitInterface);
     }
 
@@ -61,4 +65,7 @@ public class RetrofitFactoryBean<T> implements FactoryBean<T> {
         return retrofitInterface;
     }
 
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
 }
