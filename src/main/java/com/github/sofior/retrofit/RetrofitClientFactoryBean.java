@@ -22,22 +22,22 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Slf4j
-public class RetrofitFactoryBean<T> implements FactoryBean<T> {
+public class RetrofitClientFactoryBean<T> implements FactoryBean<T> {
 
     private Class<T> retrofitInterface;
 
     private Environment environment;
 
-    public RetrofitFactoryBean() {
+    public RetrofitClientFactoryBean() {
     }
 
-    public RetrofitFactoryBean(Class<T> retrofitInterface) {
+    public RetrofitClientFactoryBean(Class<T> retrofitInterface) {
         this.retrofitInterface = retrofitInterface;
     }
 
     @Override
     public T getObject() throws Exception {
-        RetrofitService annotation = this.getRetrofitInterface().getAnnotation(RetrofitService.class);
+        RetrofitClient annotation = this.getRetrofitInterface().getAnnotation(RetrofitClient.class);
         String url = environment.resolvePlaceholders(annotation.url());
         log.debug("{} base url is {}", retrofitInterface.getName(), url);
         Retrofit retrofit = new Retrofit.Builder()
