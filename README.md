@@ -1,44 +1,43 @@
 # Example
 ```java
-@Component
-public class TestOrikaMapper implements OrikaMapper {
-    @Override
-    public void register(MapperFactory mapperFactory) {
-        mapperFactory.classMap(X.class, Y.class)
-                .field("x", "y")
-                .byDefault().register();
+@SpringBootApplication
+@EnableRetrofitClients
+public class BackendApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(BackendApplication.class, args);
     }
+    
+}
+
+@RetrofitClient(url = "${test.url}")
+public interface WeatherService {
+
+    @GET("/telematics/v3/weather?location=%E5%98%89%E5%85%B4&output=json&ak=5slgyqGDENN7Sy7pw29IUvrZ")
+    Call<Map> getBlog();
 }
 
 @RestController
-public class TController {
-    @Resource
-    private MapperFacade facade;
-    @GetMapping("/test")
-    public Y test() {
-        X x = new X();
-        x.setX("X");
-        x.setCommon("common");
-        return facade.map(x, Y.class);
+@RequestMapping("/test")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class TestController {
+
+    private final UserService userService;
+
+    private final WeatherService weatherService;
+    
+    @GetMapping("/w")
+    public Map w() throws IOException {
+        Response<Map> execute = weatherService.getBlog().execute();
+        Map body = execute.body();
+        return body;
     }
 }
 ```
-via '/test' you will see 
+via '/test/w' you will see 
 ```json
 {
-"common": "common",
-"y": "X"
+status: 201,
+message: "APP被用户自己禁用，请在控制台解禁"
 }
 ```
-# custom mapperFactory
-```java
-@Configuration
-public class Config {
-    @Bean
-    public MapperFactory mapperFactory() {
-        //init your own factory here
-        return new DefaultMapperFactory.Builder().build();
-    }
-}
-```
-more info of orika click [here](http://orika-mapper.github.io/orika-docs)
