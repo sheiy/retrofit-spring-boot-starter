@@ -17,12 +17,13 @@ package com.github.sofior.retrofit;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Slf4j
-public class RetrofitClientFactoryBean<T> implements FactoryBean<T> {
+public class RetrofitClientFactoryBean<T> implements FactoryBean<T>, EnvironmentAware {
 
     private Class<T> retrofitInterface;
 
@@ -57,7 +58,7 @@ public class RetrofitClientFactoryBean<T> implements FactoryBean<T> {
         return true;
     }
 
-    public void setRetrofitInterfaceInterface(Class<T> retrofitInterface) {
+    public void setRetrofitInterface(Class<T> retrofitInterface) {
         this.retrofitInterface = retrofitInterface;
     }
 
@@ -65,6 +66,7 @@ public class RetrofitClientFactoryBean<T> implements FactoryBean<T> {
         return retrofitInterface;
     }
 
+    @Override
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }

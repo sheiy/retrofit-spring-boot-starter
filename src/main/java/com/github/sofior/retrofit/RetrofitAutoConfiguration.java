@@ -11,5 +11,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnClass(OkHttpClient.class)
 public class RetrofitAutoConfiguration {
-
+//预留扩展
 }
