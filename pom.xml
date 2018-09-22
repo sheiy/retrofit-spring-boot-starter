@@ -92,14 +92,14 @@
 
     <distributionManagement>
         <repository>
-            <id>i7</id>
+            <id>ownw</id>
             <name>Internal Releases</name>
-            <url>http://xlz35429674.3322.org:8081/repository/maven-releases/</url>
+            <url>http://nexus.ownw.site/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
-            <id>i7</id>
-            <name>Internal Releases</name>
-            <url>http://xlz35429674.3322.org:8081/repository/maven-snapshots/</url>
+            <id>ownw</id>
+            <name>Internal Snapshots</name>
+            <url>http://nexus.ownw.site/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
