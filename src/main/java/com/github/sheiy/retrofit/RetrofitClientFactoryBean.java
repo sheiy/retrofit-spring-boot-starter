@@ -13,14 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.sofior.retrofit;
+package com.github.sheiy.retrofit;
 
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+
+import java.time.Duration;
 
 @Slf4j
 public class RetrofitClientFactoryBean<T> implements FactoryBean<T>, EnvironmentAware {
@@ -29,7 +34,16 @@ public class RetrofitClientFactoryBean<T> implements FactoryBean<T>, Environment
 
     private Environment environment;
 
+    private HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(log::debug);
+
+    private OkHttpClient httpClient = new OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .retryOnConnectionFailure(false)
+            .connectTimeout(Duration.ofSeconds(15))
+            .build();
+
     public RetrofitClientFactoryBean() {
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 
     public RetrofitClientFactoryBean(Class<T> retrofitInterface) {
@@ -42,8 +56,12 @@ public class RetrofitClientFactoryBean<T> implements FactoryBean<T>, Environment
         String url = environment.resolvePlaceholders(annotation.url());
         log.debug("{} base url is {}", retrofitInterface.getName(), url);
         Retrofit retrofit = new Retrofit.Builder()
+                //首先判断是否需要转换成字符串，简单类型
+                .addConverterFactory(ScalarsConverterFactory.create())
+                //再将转换成bean
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(url)
+                .client(httpClient)
                 .build();
         return retrofit.create(retrofitInterface);
     }

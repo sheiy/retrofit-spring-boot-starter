@@ -1,4 +1,4 @@
-package com.github.sofior.retrofit;
+package com.github.sheiy.retrofit;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ResourceLoaderAware;

@@ -1,4 +1,4 @@
-package com.github.sofior.retrofit;
+package com.github.sheiy.retrofit;
 
 import okhttp3.OkHttpClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
