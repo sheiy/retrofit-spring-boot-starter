@@ -34,7 +34,12 @@ public class RetrofitClientFactoryBean<T> implements FactoryBean<T>, Environment
 
     private Environment environment;
 
-    private HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(log::info);
+    private HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+        @Override
+        public void log(String message) {
+            log.info(message);
+        }
+    });
 
     private OkHttpClient httpClient = new OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
